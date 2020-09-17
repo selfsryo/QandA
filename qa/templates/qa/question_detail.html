@@ -208,7 +208,7 @@
             <a href="{% url 'users:user_detail' reply.author.username  %}">@{{ reply.author.username }}</a>
           </p>
         </div> 
-        {% if request.user == answer.author %}
+        {% if request.user == reply.author %}
           <div class="col-2 fs14">
             <p>
               <a href="{% url 'qa:reply_delete' reply.pk %}"> 返答を削除する</a>

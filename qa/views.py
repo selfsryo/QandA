@@ -140,8 +140,8 @@ class ReplyCreateView(LoginRequiredMixin, generic.CreateView):
         context['question'] = context['answer'].question
         return context
 
-    # def get_object(self):
-    #     return get_object_or_404(Answer, pk=self.kwargs['answer_pk'])
+    def get_object(self):
+        return get_object_or_404(Answer, pk=self.kwargs['pk'])
 
 
 class ReplyDeleteView(AuthorRequiredMixin, generic.DeleteView):
@@ -157,10 +157,6 @@ class ReplyDeleteView(AuthorRequiredMixin, generic.DeleteView):
         context['answer'] = self.get_object().answer
         context['question'] = context['answer'].question
         return context
-
-    # def get_object(self):
-    #     return get_object_or_404(Reply, pk=self.kwargs['pk'])
-
 
 
 class BestAnswerUpdate(AuthorRequiredMixin, generic.View):

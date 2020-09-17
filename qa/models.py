@@ -44,19 +44,25 @@ class QuestionManager(models.Manager):
 
 class Question(models.Model):
     title = models.CharField("タイトル", max_length=255)
-    tag = models.ManyToManyField(Tag, verbose_name="タグ", blank=True)
+    tag = models.ManyToManyField(
+        Tag,
+        verbose_name="タグ",
+        blank=True
+    )
     text = MarkdownxField("質問の本文")
-    author = models.ForeignKey("users.User", 
-                                      on_delete=models.CASCADE, 
-                                      verbose_name="質問者")
+    author = models.ForeignKey(
+        "users.User", 
+        on_delete=models.CASCADE, 
+        verbose_name="質問者"
+    )
     created_at = models.DateTimeField("質問した日時", auto_now_add=True)
     is_public = models.BooleanField("公開する", default=True)
     best_answer = models.OneToOneField("Answer", 
-                                       on_delete=models.SET_NULL, 
-                                       null= True, 
-                                       blank=True,
-                                       verbose_name="ベストアンサー",
-                                       related_name="question_best_answer")
+        on_delete=models.SET_NULL, 
+        null= True, 
+        blank=True,
+        verbose_name="ベストアンサー",
+        related_name="question_best_answer")
 
     class Status(models.TextChoices):
         ACTIVE = "active", "アクティブ"
@@ -64,9 +70,9 @@ class Question(models.Model):
         ACCEPTED = "accepted", "解決済み"
         
     status = models.CharField("ステータス", 
-                              max_length=12, 
-                              choices=Status.choices, 
-                              default=Status.NOT_ANSWERED)
+        max_length=12, 
+        choices=Status.choices, 
+        default=Status.NOT_ANSWERED)
     objects = QuestionManager()
 
     class Meta:
@@ -104,12 +110,16 @@ class AnswerManager(models.Manager):
 
 class Answer(models.Model):
     text = MarkdownxField("回答の本文")
-    question = models.ForeignKey(Question, 
-                                 on_delete=models.CASCADE, 
-                                 verbose_name="対象の質問")
-    author = models.ForeignKey("users.User", 
-                               on_delete=models.CASCADE, 
-                               verbose_name="回答者")
+    question = models.ForeignKey(
+        Question, 
+        on_delete=models.CASCADE, 
+        verbose_name="対象の質問"
+    )
+    author = models.ForeignKey(
+        "users.User", 
+        on_delete=models.CASCADE, 
+        verbose_name="回答者"
+    )
     is_best = models.BooleanField("ベストアンサー", default=False)
     created_at = models.DateTimeField("回答した日時", auto_now=True)
 
@@ -126,12 +136,16 @@ class ReplyManager(models.Manager):
 
 class Reply(models.Model):
     text = MarkdownxField("回答への返答")
-    answer = models.ForeignKey(Answer, 
-                               on_delete=models.CASCADE, 
-                               verbose_name="対象の回答")
-    author = models.ForeignKey("users.User", 
-                               on_delete=models.CASCADE, 
-                               verbose_name="返答者")
+    answer = models.ForeignKey(
+        Answer, 
+        on_delete=models.CASCADE, 
+        verbose_name="対象の回答"
+    )
+    author = models.ForeignKey(
+        "users.User", 
+        on_delete=models.CASCADE, 
+        verbose_name="返答者"
+    )
     created_at = models.DateTimeField("返答した日時", auto_now=True)
 
     class Meta:
