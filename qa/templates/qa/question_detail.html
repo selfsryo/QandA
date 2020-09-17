@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load markdownize %}
+
+{% block content %}
+
+<div class="fs12">
+  {% for tag in question.tag.all %} 
+    <p class="d-inline bg-primary p-1 mr-2">
+      <a class="text-white " href="{% url 'qa:question_list' %}?tag={{ tag.name }} ">
+      {{ tag.name }}
+      </a>
+    </p>
+  {% endfor %}
+</div>
+
+<div class="detail-title font-weight-bold">
+  {{ question.title }}
+</div>
+
+<div class="detail-info">
+  <div class="row">
+    <div class="col-2">
+      <div class="fs12 bg-secondary text-white d-inline p-1">
+        {{ question.get_status_display }}
+      </div>
+    </div>
+    <div class="col-1">
+      {% if not question.is_public %}
+        <div class="fs12 bg-danger text-white d-inline p-1">
+          非公開
+        </div>
+      {% endif %}
+    </div>
+    <div class="col-2">
+      <div class="fs12 ">
+        回答数：{{ question.answer_set.count }}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="fs12">
+        <p>
+          <a href="{% url 'users:user_detail' question.author.username %}">@{{ question.author.username }}</a>
+        </p>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="fs12 text-right">
+        {{ question.created_at }}に投稿
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-text">
+  <p>{{ question.question_text | markdown_to_html_with_escape }}</p>
+</div>
+
+{% if request.user == question.author %}
+  <div class="fs14">
+    <div class="row">
+      <div class="offset-8 col-2">
+        <p>
+          <a href="{% url 'qa:question_update' question.pk %}">質問を更新する</a>
+        </p>
+      </div>
+      <div class="col-2 text-right">
+        <p>
+          <a href="{% url 'qa:question_delete' question.pk %}">質問を削除する</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<hr>
+
+<div class="detail-answer">
+  <p class="fs20 font-weight-bold">回答 {{question.answer_set.count}} 件 </p>
+
+  {% if best_answer %}
+    <hr>
+    <div>
+      <p class="text-danger font-weight-bold">★ベストアンサー</p>
+      <div class="best-answer-text">
+        {{ best_answer.text | markdown_to_html_with_escape }}
+      </div>
+
+      <div class="row">
+        <p class="fs14 col-3">
+          <a href="{% url 'qa:reply_create' best_answer.pk %}" rel="nofollow">返信する</a>
+        </p>
+
+        <div class="fs12 offset-2 col-3">
+          <p>
+            <a href="{% url 'users:user_detail' best_answer.author.username %}">@{{ best_answer.author.username }}</a>
+          </p>
+        </div>
+
+        {% if request.user == best_answer.author %}
+          <div class="col-2 fs14">
+            <p>
+              <a href="{% url 'qa:answer_delete' best_answer.pk %}"> 回答を削除する</a>
+            </p>
+          </div>
+
+          <div class="fs12 col-2 text-right">
+            {{ best_answer.created_at }}に投稿
+          </div>
+        {% else %}
+          <div class="fs12 col-4 text-right">
+            {{ best_answer.created_at }}に投稿
+          </div>
+        {% endif %}
+      </div>
+
+      {% if request.user == question.author %}
+        <form method="post" action="{% url 'qa:best_answer' best_answer.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="set-best-answer btn bg-secondary text-white p-1" name="is_best" value="">ベストアンサーから解除</button>
+        </form>
+      {% endif %}
+    </div>
+    
+    {% for reply in best_answer.reply_set.all %}
+      <div class="row">
+        <div class="offset-2 col-10">
+          <hr>
+          {{ reply.text | markdown_to_html_with_escape }}
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="fs12 offset-5 col-3">
+          <p>
+            <a href="{% url 'users:user_detail' best_answer.author.username %}">@{{ reply.author.username }}</a>
+          </p>
+        </div>  
+        {% if request.user == best_answer.author %}
+          <div class="col-2 fs14">
+            <p>
+              <a href="{% url 'qa:reply_delete' reply.pk %}"> 返答を削除する</a>
+            </p>
+          </div>
+          <div class="fs12 col-2 text-right">
+            {{ reply.created_at }}に投稿
+          </div>
+        {% else %}
+          <div class="fs12 col-4 text-right">
+            {{ reply.created_at }}に投稿
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <hr>
+
+  {% for answer in answer_list %}
+    <div class="detail-answer-text">
+      {{ answer.text  | markdown_to_html_with_escape }}
+    </div>
+
+    <div class="detail-answer-body row">
+      <p class="fs14 col-3">
+        <a href="{% url 'qa:reply_create' answer.pk %}" rel="nofollow">返信する</a>
+      </p>
+
+      <div class="fs12 offset-2 col-3">
+        <p>
+          <a href="{% url 'users:user_detail' answer.author.username %}">@{{ answer.author.username }}</a>
+        </p>
+      </div>
+
+      {% if request.user == answer.author %}
+        <div class="col-2 fs14">
+          <p class="">
+            <a href="{% url 'qa:answer_delete' answer.pk %}"> 回答を削除する</a>
+          </p>
+        </div>
+        <div class="fs12 col-2 text-right">
+          {{ answer.created_at }}に投稿
+        </div>
+      {% else %}
+        <div class="fs12 col-4 text-right">
+          {{ answer.created_at }}に投稿
+        </div>
+      {% endif %}
+    </div>
+
+    {% if request.user == question.author %}
+      <form method="post" action="{% url 'qa:best_answer' answer.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="set-best-answer btn bg-secondary text-white p-1" name="is_best" value="true">ベストアンサーに選ぶ</button>
+      </form>
+    {% endif %}
+
+    {% for reply in answer.reply_set.all %}
+      <div class="row">
+        <div class="offset-2 col-10">
+          <hr>
+          {{ reply.text | markdown_to_html_with_escape }}
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="fs12 offset-5 col-3">
+          <p>
+            <a href="{% url 'users:user_detail' reply.author.username  %}">@{{ reply.author.username }}</a>
+          </p>
+        </div> 
+        {% if request.user == answer.author %}
+          <div class="col-2 fs14">
+            <p>
+              <a href="{% url 'qa:reply_delete' reply.pk %}"> 返答を削除する</a>
+            </p>
+          </div>
+          <div class="fs12 col-2 text-right">
+            {{ reply.created_at }}に投稿
+          </div>
+        {% else %}
+          <div class="fs12 col-4 text-right">
+            {{ reply.created_at }}に投稿
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <hr>
+  {% endfor %}
+
+  {% if not best_answer and not answer_list  %}
+    <p>まだ回答はありません</p>
+  {% endif %}
+</div>
+
+  
+<p class="fs14 mt-5">
+  <a href="{% url 'qa:answer_create' question.pk %}" rel="nofollow">質問に回答する</a>
+</p>
+
+<a href="{% url 'qa:question_list' %}"><p class="back">戻る</p></a>
+
+{% endblock %}

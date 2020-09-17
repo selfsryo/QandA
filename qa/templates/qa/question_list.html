@@ -1,0 +1,79 @@
+{% extends 'base.html' %} 
+{% load url_replace %}
+
+{% block content %}
+
+<div class="search-form">
+  <form action="" method="GET">
+    {{ search_form.q }}
+    <button type="submit" id="search-button">検索</button>
+  </form>
+</div>
+
+<div class="question-list">
+  
+  {% if tag %}
+  タグ:{{ tag.name }}がついた質問
+  {% endif %}
+
+  {% if search_form.q.value %}
+  キーワード: {{ search_form.q.value }}を持つ質問
+  {% endif %}
+  <hr />
+
+  {% for question in question_list %} 
+  <div class="row">
+    <div class="col-2">
+      <div class="fs12 bg-secondary text-white d-inline p-1">
+        {{ question.get_status_display }}
+      </div>
+      <div class="answer-count mt-3">
+        回答数:{{ question.answer_set.count }}
+      </div>
+      {% if not question.is_public %}
+        <div class="fs12 bg-danger text-white d-inline p-1">
+          非公開
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="col-10">
+      <a href="{% url 'qa:question_detail' question.pk %}">
+        <p class="fs20 d-inline">{{ question.title }}</p>
+      </a>
+
+      <div class="row mt-3">
+        <div class="fs12 col-6">
+          {% for tag in question.tag.all %} 
+            <p class="d-inline bg-primary p-1 mr-2">
+              <a class="text-white" href="{% url 'qa:question_list' %}?tag={{ tag.name }}">
+                {{ tag.name }}
+              </a>
+            </p>
+          {% endfor %}
+        </div>
+        
+        <div class="col-3 fs12">
+          <a href="{% url 'users:user_detail' question.author.username %}">
+            <p>@{{ question.author.username }}</p>
+          </a>
+        </div>
+    
+        <div class="col-3 text-right fs12">
+          <p>{{ question.created_at }}に投稿</p>
+        </div>
+    
+      </div>
+    </div>
+  </div>
+
+  <hr />
+  
+  {% endfor %}
+</div>
+
+<p class="do-question"><a href="{% url 'qa:question_create' %}" rel="nofollow">質問を投稿する</a></p>
+
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

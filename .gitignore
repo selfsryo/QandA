@@ -1,0 +1,7 @@
+media
+staticfiles
+*.pyc
+*.swp
+db.sqlite3
+__pycache__
+.env

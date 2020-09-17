@@ -1,0 +1,33 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+
+
+<p>@{{ request.user.username }}さん、以下に質問を記入してください。</p>
+  
+<form method="post" enctype="multipart/form-data" id="question-form">
+  {% csrf_token %}
+  {% for field in form %}
+    <p>
+    {{ field.label_tag }}<br>
+    {{ field }}
+
+    {% if field.help_text %}
+      <small style="color: grey">{{ field.help_text }}</small>
+    {% endif %}
+
+    {% for error in field.errors %}
+      <p style="color: red">{{ error }}</p>
+    {% endfor %}
+    </p>
+    <br>
+    <br>
+  {% endfor %}
+
+  <button type="submit" class="set-question">送信</button>
+  <a class="back-btn" href="{% url 'qa:question_list' %}">送信せずに戻る</a>
+</form>
+{{ form.media }}
+<br>
+
+{% endblock %}

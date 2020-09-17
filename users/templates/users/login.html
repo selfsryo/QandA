@@ -1,0 +1,41 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+
+<h1>ログイン</h1>
+
+    {% if user.is_authenticated %}
+      <p>既にログイン済みです。元の画面に戻ってください。</p>
+    {% else %}
+    
+      <form method="post">
+        {% csrf_token %} 
+        {% for error in form.errors %}
+          <p style="color: red">ユーザー名かパスワードが間違っています。</p>
+        {% endfor %}
+    
+        <table>
+          <tr>
+            <td>{{ form.username.label_tag }}</td>
+            <td>{{ form.username }}</td>
+          </tr>
+          <tr>
+            <td>{{ form.password.label_tag }}</td>
+            <td>{{ form.password }}</td>
+          </tr>
+        </table>
+      
+        <input type="submit" value="ログイン" />
+        
+      </form>
+    
+      <br>
+      <br>
+      <p class="password-reset">パスワードを忘れてしまった方は<a href="{% url 'users:password_reset' %}">こちら</a></p>
+      <hr>
+      <br>
+      
+    {% endif %}
+
+{% endblock %}
+  

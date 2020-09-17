@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for tag in tag_list %}
+  <div>
+    <p class="fs14 d-inline-block bg-primary p-1 mr-2">
+      <a class="text-white " href="{% url 'qa:question_list' %}?tag={{ tag.name }} ">
+        {{ tag.name }}
+      </a>
+    </p>
+    <p class= "fs14">{{ tag.question_set.count }}件の質問</p>
+  </div>
+  <hr>
+{% endfor %} 
+
+{% endblock %}

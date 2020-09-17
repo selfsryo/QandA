@@ -1,0 +1,46 @@
+{% extends 'base.html' %} 
+{% load markdownize %}
+
+{% block content %}
+
+<p>@{{ question.author.username }}の質問</p>
+<div class="fs14">
+  <p>{{ question.text | markdown_to_html_with_escape }}</p>
+</div>
+<hr>
+
+<p>上記の質問に対する@{{ answer.author.username }}の回答</p>
+<div>
+  <p>{{ answer.text | markdown_to_html_with_escape }}</p>
+</div>
+<hr>
+
+{% for reply in answer.reply_set.all %}
+<p>@{{ reply.author.username }}</p>
+<div>
+  <p>{{ reply.text | markdown_to_html_with_escape }}</p>
+</div>
+<hr>
+{% endfor %}
+
+<form action="" method="POST" id="reply-form">
+  {{ form.non_field_errors }} 
+    {% for field in form %}
+      <div class="field">
+        {{ field.label_tag }}
+        {{ field }} 
+        
+        {% if field.help_text %}
+          <span class="helptext">※{{ field.help_text }}</span>
+        {% endif %}
+        
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    {% csrf_token %}
+
+  <button type="submit" class="btn bg-secondary text-white p-1">送信</button>
+  <a class="back-btn" href="{% url 'qa:question_detail' question.pk %}">送信せずに戻る</a>
+</form>
+
+{% endblock %}

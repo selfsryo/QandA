@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>ユーザー登録</h1>
+<hr>
+<h3>フォームから登録</h3>
+
+<section class="common-form">
+  <form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% for field in form %}
+    <p>
+    {{ field.label_tag }}<br>
+    {{ field }}
+    {% if field.help_text %}
+      <small style="color: grey">{{ field.help_text }}</small>
+    {% endif %}
+    {% for error in field.errors %}
+      <p style="color: red">{{ error }}</p>
+    {% endfor %}
+    </p>
+  {% endfor %}
+
+  <div class="mt-5">
+    <button type="submit">ユーザー登録</button>
+  </div>
+  
+  </form>
+</section>
+
+{% endblock %}

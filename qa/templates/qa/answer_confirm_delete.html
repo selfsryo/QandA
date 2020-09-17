@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load markdownize %}
+
+{% block content %}
+
+<h4>回答削除確認</h4>
+<hr>
+
+<p>以下の質問に対する回答を削除しますか？<br>※削除した場合、回答に対する返答もすべて削除されます。</p>
+<form method="post">
+  {% csrf_token %}
+  <input type="submit" value="削除する">
+</form>
+<br>
+<div class="detail-title font-weight-bold">
+  {{ question.title }}
+</div>
+
+<div class="detail-info">
+  <div class="row">
+    <div class="col-3">
+      <div class="fs12 bg-secondary text-white d-inline p-1">
+        {{ question.get_status_display }}
+      </div>
+    </div>
+    
+    <div class="col-3 offset-2">
+      <div class="fs12">
+        <p>
+          <a href="{% url 'users:user_detail' question.author.username %}">@{{ question.author.username }}</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="fs12 text-right">
+        {{ question.created_At }}に投稿
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-text">
+  <p>{{ question.question_text | markdown_to_html_with_escape }}</p>
+</div>
+<hr>
+
+<p class="fs20 font-weight-bold">削除される回答</p>
+<div class="detail-answer">
+  <div class="detail-answer-text">
+  {{ answer.answer_text  | markdown_to_html_with_escape }}
+  </div> 
+
+  <div class="detail-answer-body row">
+    <div class="fs12 offset-5 col-3">
+      <p>
+        <a href="{% url 'users:user_detail' answer.author.username %}">@{{ answer.author.username }}</a>
+      </p>
+    </div>
+    <div class="fs12 col-4 text-right">
+      {{ answer.created_at }}に投稿
+    </div>
+  </div>
+
+  {% for reply in answer.reply_set.all %}
+    <div class="row">
+      <div class="offset-2 col-10">
+      <hr>
+      {{ reply.text | markdown_to_html_with_escape }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="fs12 offset-5 col-3">
+        <p>
+          <a href="{% url 'users:user_detail' reply.author.username  %}">@{{ reply.author.username }}</a>
+        </p>
+      </div>  
+      <div class="fs12 col-4 text-right">
+      {{ reply.created_at }}に投稿
+      </div>
+    </div>
+  {% endfor %}
+
+  <hr>
+</div>
+
+{% endblock %}
