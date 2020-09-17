@@ -22,10 +22,7 @@ class EscapeHtml(Extension):
 
 @register.filter
 def markdown_to_html_with_escape(text):
-    """マークダウンをhtmlに変換する。
-    生のHTMLやCSS、JavaScript等のコードをエスケープした上で、マークダウンをHTMLに変換します。
-    公開しているコメント欄等には、こちらを使ってください。
-    """
+    """マークダウンをhtmlに変換"""
     extensions = settings.MARKDOWNX_MARKDOWN_EXTENSIONS + [EscapeHtml()]
     html = markdown.markdown(text, extensions=extensions)
     return mark_safe(html)
