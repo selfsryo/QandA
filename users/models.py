@@ -14,9 +14,11 @@ class UserManager(BaseUserManager):
             raise ValueError('The given username must be set')
         if not email:
             raise ValueError('The given email must be set')
-        user = self.model(username=username, 
-                          email=self.normalize_email(email),
-                          **extra_fields)
+        user = self.model(
+            username=username, 
+            email=self.normalize_email(email),
+            **extra_fields
+        )
         user.set_password(password)
         user.save(using=self.db)
         return user
@@ -37,18 +39,24 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField("名前", 
-                                unique=True,
-                                max_length=20,
-                                help_text='20字以内にしてください。')
+    username = models.CharField(
+        "名前", 
+        unique=True,
+        max_length=20,
+        help_text='20字以内にしてください。'
+    )
     email = models.EmailField("メールアドレス", unique=True)
-    thumbnail = models.ImageField("サムネイル", 
-                                  upload_to=datetime.now().strftime('users/%Y/%m/%d'),
-                                  blank=True,
-                                  null=True)
-    followees = models.ManyToManyField('self',
-                                      blank=True,
-                                      symmetrical=False)
+    thumbnail = models.ImageField(
+        "サムネイル", 
+        upload_to=datetime.now().strftime('users/%Y/%m/%d'),
+        blank=True,
+        null=True
+    )
+    followees = models.ManyToManyField(
+        'self',
+        blank=True,
+        symmetrical=False
+    )
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)	
