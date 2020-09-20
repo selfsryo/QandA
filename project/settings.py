@@ -12,11 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
-import environ
-env = environ.Env()
-env.read_env('.env')
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = '=j19i$u=w20k2zfpaw5mlrlzzbku^q!0mg-xv81b2cs!w)xhs9'
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -171,6 +168,3 @@ INTERNAL_IPS = [
 
 # パスワードリセット送信メール設定
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
-
