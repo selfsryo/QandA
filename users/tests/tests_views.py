@@ -3,7 +3,7 @@ from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.shortcuts import redirect
-from django.test import TestCase, Client
+from django.test import Client, RequestFactory, TestCase 
 from django.urls import reverse, resolve
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -93,30 +93,58 @@ class InvalidSignUpTests(TestCase):
 class UserLoginTests(TestCase):
     fixtures = ['active_users']
 
+    def setUp(self):
+        self.user1 = UserModel.objects.get(pk=1)
+
     def test_top_page_status_code(self):
         response = Client().get("/users/login/")
         self.assertEqual(200, response.status_code)
 
     def test_login_success(self):
-        user = UserModel.objects.get(pk=1)
-        user.set_password('12345')
-        user.save()
+        self.user1.set_password('12345')
+        self.user1.save()
         logged_in = Client().login(email='selfsryo@example.com', password='12345')
         self.assertTrue(logged_in)
 
     def test_login_email_error(self):
-        user = UserModel.objects.get(pk=1)
-        user.set_password('12345')
-        user.save()
+        self.user1.set_password('12345')
+        self.user1.save()
         logged_in = Client().login(email='error@example.com', password='12345')
         self.assertFalse(logged_in)
 
     def test_login_password_error(self):
-        user = UserModel.objects.get(pk=1)
-        user.set_password('12345')
-        user.save()
+        self.user1.set_password('12345')
+        self.user1.save()
         logged_in = Client().login(email='selfsryo@example.com', password='error')
         self.assertFalse(logged_in)
+
+
+class UserFollowTests(TestCase):
+    fixtures = ['active_users']
+
+    def setUp(self):
+        self.user1 = UserModel.objects.get(pk=1)
+        self.user2 = UserModel.objects.get(pk=2)
+        self.client.force_login(self.user1)
+        self.url = reverse('users:user_follow', kwargs={'username': self.user2.username})
+        # user1はuser2をフォローしている状態
+        self.response = self.client.post(self.url, follow=True)
+
+    def test_status_code(self):
+        self.assertEquals(self.response.status_code, 200)
+
+    def test_user_follow(self):
+        self.assertTrue(self.user2 in self.user1.followees.all())
+
+    def test_user_unfollow(self):
+        # 再度POSTすることでアンフォロー
+        response = self.client.post(self.url, follow=True)
+        self.assertFalse(self.user2 in self.user1.followees.all())
+
+    def test_logout(self):
+        self.client.logout()
+        response = self.client.post(self.url, follow=True)
+        self.assertEquals(response.status_code, 403)
 
 
 class PasswordChangeDoneTests(TestCase):
@@ -225,7 +253,6 @@ class PasswordResetConfirmTests(TestCase):
 
     def setUp(self):
         user = UserModel.objects.get(pk=1)
-        # self.uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
         self.uid = urlsafe_base64_encode(force_bytes(user.pk))
         self.token = default_token_generator.make_token(user)
 
