@@ -1,0 +1,21 @@
+- model: users.User
+  pk: 1
+  fields:
+    username: selfsryo
+    email: selfsryo@example.com
+    password: secure-pass-selfsryo
+    is_active: true
+- model: users.User
+  pk: 2
+  fields:
+    username: selfs
+    email: selfs@example.com
+    password: secure-pass-selfs
+    is_active: false
+- model: users.User
+  pk: 3
+  fields:
+    username: ryo
+    email: ryo@example.com
+    password: secure-pass-ryo
+    is_active: false
