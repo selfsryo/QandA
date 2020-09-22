@@ -11,7 +11,7 @@
     username: selfs
     email: selfs@example.com
     password: secure-pass-selfs
-    is_active: false
+    is_active: true
 - model: users.User
   pk: 3
   fields:
