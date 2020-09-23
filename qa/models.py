@@ -73,6 +73,7 @@ class Question(models.Model):
         max_length=12, 
         choices=Status.choices, 
         default=Status.NOT_ANSWERED)
+
     objects = QuestionManager()
 
     class Meta:

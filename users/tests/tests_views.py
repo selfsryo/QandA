@@ -91,7 +91,7 @@ class InvalidSignUpTests(TestCase):
 
 
 class UserLoginTests(TestCase):
-    fixtures = ['active_users']
+    fixtures = ['login_test_user']
 
     def setUp(self):
         self.user1 = UserModel.objects.get(pk=1)
@@ -120,7 +120,7 @@ class UserLoginTests(TestCase):
 
 
 class UserFollowTests(TestCase):
-    fixtures = ['active_users']
+    fixtures = ['follow_test_users']
 
     def setUp(self):
         self.user1 = UserModel.objects.get(pk=1)
@@ -141,7 +141,12 @@ class UserFollowTests(TestCase):
         response = self.client.post(self.url, follow=True)
         self.assertFalse(self.user2 in self.user1.followees.all())
 
-    def test_logout(self):
+    def test_others_required(self):
+        url = reverse('users:user_follow', kwargs={'username': self.user1.username})
+        response = self.client.post(url, follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_login_required(self):
         self.client.logout()
         response = self.client.post(self.url, follow=True)
         self.assertEquals(response.status_code, 403)
@@ -158,7 +163,7 @@ class PasswordChangeDoneTests(TestCase):
 
 
 class PasswordResetMailTests(TestCase):
-    fixtures = ['active_users']
+    fixtures = ['password_test_user']
 
     def setUp(self):
         self.response = self.client.post(reverse('users:password_reset'), { 'email': 'selfsryo@example.com' })
@@ -207,7 +212,7 @@ class PasswordResetTests(TestCase):
 
 
 class SuccessfulPasswordResetTests(TestCase):
-    fixtures = ['active_users']
+    fixtures = ['password_test_user']
 
     def setUp(self):
         email = 'selfsryo@example.com'
@@ -249,7 +254,7 @@ class PasswordResetDoneTests(TestCase):
 
 
 class PasswordResetConfirmTests(TestCase):
-    fixtures = ['active_users']
+    fixtures = ['password_test_user']
 
     def setUp(self):
         user = UserModel.objects.get(pk=1)
