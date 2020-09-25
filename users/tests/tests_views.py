@@ -127,28 +127,32 @@ class UserFollowTests(TestCase):
         self.user2 = UserModel.objects.get(pk=2)
         self.client.force_login(self.user1)
         self.url = reverse('users:user_follow', kwargs={'username': self.user2.username})
-        # user1はuser2をフォローしている状態
-        self.response = self.client.post(self.url, follow=True)
+        # user1がuser2をフォローしている状態
+        self.response = self.client.post(self.url)
 
     def test_status_code(self):
-        self.assertEquals(self.response.status_code, 200)
+        self.assertEquals(self.response.status_code, 302)
+
+    def test_redirect_status_code(self):
+        response = self.client.post(self.url, follow=True)
+        self.assertEquals(response.status_code, 200)
 
     def test_user_follow(self):
         self.assertTrue(self.user2 in self.user1.followees.all())
 
     def test_user_unfollow(self):
         # 再度POSTすることでアンフォロー
-        response = self.client.post(self.url, follow=True)
+        response = self.client.post(self.url)
         self.assertFalse(self.user2 in self.user1.followees.all())
 
     def test_others_required(self):
         url = reverse('users:user_follow', kwargs={'username': self.user1.username})
-        response = self.client.post(url, follow=True)
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
 
     def test_login_required(self):
         self.client.logout()
-        response = self.client.post(self.url, follow=True)
+        response = self.client.post(self.url)
         self.assertEquals(response.status_code, 403)
 
 

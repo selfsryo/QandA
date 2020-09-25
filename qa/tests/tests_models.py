@@ -34,15 +34,6 @@ class QuestionManagerTests(TestCase):
         questions = Question.objects.search('queryset')
         self.assertEqual(len(questions), 1)
 
-        questions = Question.objects.search('se')
-        self.assertEqual(len(questions), 2)
-
-        questions = Question.objects.search('se qu')
-        self.assertEqual(len(questions), 1)
-
-        questions = Question.objects.search('testtest')
-        self.assertEqual(len(questions), 0)
-
 
 class QuestionModelTests(TestCase):
 
