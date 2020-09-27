@@ -12,9 +12,10 @@ class QuestionManagerTests(TestCase):
 
     def setUp(self):
         self.user = UserFactory.create()
+        # self.users = UserFactory.create_batch(10)
         self.request = RequestFactory()
         self.request.user = self.user
-
+        # import pdb; pdb.set_trace()
         self.q1 = QuestionFactory.create(is_public=True, title='search')
         self.q2 = QuestionFactory.create(is_public=False, text='queryset')
         self.q3 = QuestionFactory.create(is_public=True, author=self.user)
